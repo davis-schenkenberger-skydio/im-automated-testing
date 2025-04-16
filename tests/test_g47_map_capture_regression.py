@@ -436,6 +436,8 @@ def test_sensor_compatibility(mission: MissionEditor):
     expect(
         camera_settings.capture_thermal.warning_content, tc.TEST_813422
     ).to_contain_text("Setting not available")
+
+    camera_settings.thermal_file_type.warning_button.hover()
     expect(
         camera_settings.thermal_file_type.warning_content, tc.TEST_813422
     ).to_contain_text("Setting not available")
