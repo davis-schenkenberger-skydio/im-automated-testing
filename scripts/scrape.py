@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "bs4",
+# ]
+# ///
 import sys
 from pathlib import Path
 
