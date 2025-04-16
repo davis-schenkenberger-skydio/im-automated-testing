@@ -13,7 +13,7 @@ class TabList:
         self.warning_button = element.locator("svg")
         self.warning_content = self.page.locator(
             "//div[@data-slot='content' and @data-open='true']"
-        )
+        ).last
 
         self.page = element.page
         self.buttons = element.locator("button")
