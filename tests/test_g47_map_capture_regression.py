@@ -11,7 +11,7 @@ from utils.funcs import check_change
 from utils.points import find_perpendicular_point, midpoint, sort_by_angle
 
 
-@pytest.mark.testrails(id=[805497])
+@pytest.mark.testrail(id=[805497])
 def test_open_editor(open_mission_from_cloud: MissionEditor):
     detail_e = open_mission_from_cloud.mission_details.element
 
@@ -21,7 +21,7 @@ def test_open_editor(open_mission_from_cloud: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[813391])
+@pytest.mark.testrail(id=[813391])
 def test_map_search(mission: MissionEditor):
     mission.map.poll_for_map_ref()
     change = mission.map.map_change()
@@ -35,7 +35,7 @@ def test_map_search(mission: MissionEditor):
 
 
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[812324])
+@pytest.mark.testrail(id=[812324])
 def test_add_boundaries(mission: MissionEditor):
     mission.map.poll_for_map_ref()
     mission.mission_details.open()
@@ -52,7 +52,7 @@ def test_add_boundaries(mission: MissionEditor):
 
 @pytest.mark.parametrize("dock", [None], ids=["no dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=None)
+@pytest.mark.testrail(id=None)
 def test_cant_add_boundaries(mission: MissionEditor):
     mission.mission_details.open()
 
@@ -62,7 +62,7 @@ def test_cant_add_boundaries(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[812325, 813402])
+@pytest.mark.testrail(id=[812325, 813402])
 def test_skip_add_boundary(mission: MissionEditor):
     scan_settings = mission.scan_settings
     scan_settings.open()
@@ -75,7 +75,7 @@ def test_skip_add_boundary(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[805426, 813395, 813391])
+@pytest.mark.testrail(id=[805426, 813395, 813391])
 def test_mission_name(mission: MissionEditor):
     expect(mission.mission_details.name, tc.TEST_805425).to_have_attribute(
         "placeholder",
@@ -98,7 +98,7 @@ def test_mission_name(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[813397, 813396])
+@pytest.mark.testrail(id=[813397, 813396])
 def test_select_site(mission: MissionEditor):
     assert mission.mission_details.site.selected() == "No Site", tc.TEST_813396
 
@@ -110,7 +110,7 @@ def test_select_site(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[813398, 813401])
+@pytest.mark.testrail(id=[813398, 813401])
 def test_site_selection_with_boundary(mission: MissionEditor):
     mission.mission_details.site.select(cfg.SITE_NAME)
     mission.mission_details.dock.select(re.compile(cfg.DOCK_NAME + ".*"))
@@ -127,7 +127,7 @@ def test_site_selection_with_boundary(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[813400, 813392])
+@pytest.mark.testrail(id=[813400, 813392])
 def test_site_selection_map(mission: MissionEditor):
     mission.map.poll_for_map_ref()
     change = mission.map.map_change()
@@ -142,7 +142,7 @@ def test_site_selection_map(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[813399])
+@pytest.mark.testrail(id=[813399])
 def test_site_proceed_no_site(mission: MissionEditor):
     mission.search_in_map(cfg.ADDRESS_QUERY)
     mission.map.wait_for_not_zooming()
@@ -161,7 +161,7 @@ def test_site_proceed_no_site(mission: MissionEditor):
 @pytest.mark.parametrize("site", [cfg.SITE_NAME], ids=["site"])
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrails(id=[813000])
+@pytest.mark.testrail(id=[813000])
 def test_dock_selection_map(mission: MissionEditor):
     change = mission.map.map_change()
 
@@ -172,7 +172,7 @@ def test_dock_selection_map(mission: MissionEditor):
     assert change.rendered_changed > 0, tc.TEST_813000
 
 
-@pytest.mark.testrails(id=[805428, 813394])
+@pytest.mark.testrail(id=[805428, 813394])
 def test_boundary_edit(mission: MissionEditor):
     expect(mission.mission_details.add_boundary, tc.TEST_813394).to_be_hidden()
 
@@ -185,7 +185,7 @@ def test_boundary_edit(mission: MissionEditor):
     assert before_moving != after_moving, tc.TEST_805428
 
 
-@pytest.mark.testrails(id=[805429])
+@pytest.mark.testrail(id=[805429])
 def test_boundary_add(mission: MissionEditor):
     points = sort_by_angle(mission.map.get_current_map_points())
     a, b = points[1], points[2]
@@ -202,7 +202,7 @@ def test_boundary_add(mission: MissionEditor):
     assert len(points) < len(mission.map.get_current_map_points()), tc.TEST_805429
 
 
-@pytest.mark.testrails(id=[805430, 805431])
+@pytest.mark.testrail(id=[805430, 805431])
 def test_boundary_delete(mission: MissionEditor):
     points = mission.map.get_current_map_points()
     points = [mission.map.correct_frame(x) for x in points]
@@ -223,7 +223,7 @@ def test_boundary_delete(mission: MissionEditor):
         assert len(mission.map.get_current_map_points()) == 3
 
 
-@pytest.mark.testrails(id=[805476, 805477, 812332, 812330, 805478])
+@pytest.mark.testrail(id=[805476, 805477, 812332, 812330, 805478])
 def test_height_input(mission: MissionEditor):
     mission.scan_settings.open()
     height_slider = mission.scan_settings.height
@@ -251,7 +251,7 @@ def test_height_input(mission: MissionEditor):
     assert high_alt_photos < low_alt_photos, tc.TEST_805478
 
 
-@pytest.mark.testrails(id=[813632, 812328, 812331, 812329, 813404])
+@pytest.mark.testrail(id=[813632, 812328, 812331, 812329, 813404])
 def test_gimbal_angle_input(mission: MissionEditor):
     mission.scan_settings.open()
     gimbal_slider = mission.scan_settings.gimbal_angle
@@ -279,7 +279,7 @@ def test_gimbal_angle_input(mission: MissionEditor):
     assert high_rotate > low_rotate, tc.TEST_813404
 
 
-@pytest.mark.testrails(id=[805480, 813405, 805481, 805483, 805484])
+@pytest.mark.testrail(id=[805480, 813405, 805481, 805483, 805484])
 def test_sidelap_overlap(mission: MissionEditor):
     mission.scan_settings.open()
 
@@ -319,7 +319,7 @@ def test_sidelap_overlap(mission: MissionEditor):
     assert time_change.change > 0, tc.TEST_805484
 
 
-@pytest.mark.testrails(id=[805457, 805461, 805462])
+@pytest.mark.testrail(id=[805457, 805461, 805462])
 def test_crosshatch(mission: MissionEditor):
     # TODO: find a way to verify that crosshatch is displayed on map
     mission.scan_settings.open()
@@ -348,7 +348,7 @@ def test_crosshatch(mission: MissionEditor):
     # assert map_change.rendered_changed < 0, tc.TEST_812350
 
 
-@pytest.mark.testrails(
+@pytest.mark.testrail(
     id=[
         812341,
         812335,
@@ -411,7 +411,7 @@ def test_camera_settings(mission: MissionEditor):
     assert camera_settings.thermal_file_type.selected() == "RJPG", tc.TEST_813415
 
 
-@pytest.mark.testrails(id=[813419, 813420, 813422, 813423])
+@pytest.mark.testrail(id=[813419, 813420, 813422, 813423])
 def test_sensor_compatibility(mission: MissionEditor):
     mission.scan_settings.open()
 
@@ -451,7 +451,7 @@ def test_sensor_compatibility(mission: MissionEditor):
     ).to_be_hidden()
 
 
-@pytest.mark.testrails(
+@pytest.mark.testrail(
     id=[805440, 805441, 805442, 805443, 805444, 805445, 805446, 805447]
 )
 def test_perimeter_settings(mission: MissionEditor):
@@ -496,7 +496,7 @@ def test_perimeter_settings(mission: MissionEditor):
     assert angle.get_value() == "80", tc.TEST_805447
 
 
-@pytest.mark.testrails(id=[805434, 805435])
+@pytest.mark.testrail(id=[805434, 805435])
 def test_stop_for_photo(mission: MissionEditor):
     mission.scan_settings.open()
 
@@ -515,7 +515,7 @@ def test_stop_for_photo(mission: MissionEditor):
     assert time_change.change > 0, tc.TEST_805435
 
 
-@pytest.mark.testrails(id=[805437])
+@pytest.mark.testrail(id=[805437])
 def test_strict_boundaries(mission: MissionEditor):
     # TODO: is there a way to verify boundaries are strict?
     mission.scan_settings.open()
@@ -525,7 +525,7 @@ def test_strict_boundaries(mission: MissionEditor):
     expect(strict_boundaries, tc.TEST_805437).to_be_checked(checked=False)
 
 
-@pytest.mark.testrails(id=[805450, 805451, 805452])
+@pytest.mark.testrail(id=[805450, 805451, 805452])
 def test_max_speed(mission: MissionEditor):
     mission.scan_settings.open()
     time_change = check_change(mission.time)
