@@ -24,7 +24,7 @@ def auth_page(new_context, cloud_email: str):
     login = Login(page)
 
     try:
-        page.wait_for_url("**/fleet", timeout=10_000)
+        page.wait_for_url("**/fleet", timeout=30_000)
     except TimeoutError:
         print("WAITING FOR USER TO LOGIN")
         login.goto()
