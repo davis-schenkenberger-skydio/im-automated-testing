@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-pytest_plugins = ["fixtures.auth"]
+pytest_plugins = ["fixtures.auth", "fixtures.mission"]
 
 
 def pytest_addoption(parser: pytest.Parser):
@@ -37,12 +37,3 @@ def cloud_email():
 @pytest.fixture(scope="session")
 def cloud_org():
     return os.environ["CLOUD_ORG"]
-
-
-# @pytest.fixture(scope="function", autouse=True)
-# def before_each_after_each(page: Page, base_url):
-#     page.goto(base_url)
-
-# @pytest.fixture(scope="session", autouse=True)
-# def load_env_file():
-#     load_dotenv()
