@@ -12,6 +12,7 @@ dependencies = [
     "pytest-playwright>=0.7.0",
     "pytest-xdist>=3.6.1",
     "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
 ]
 
 
