@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-pytest_plugins = ["fixtures.auth", "fixtures.mission"]
+pytest_plugins = ["fixtures.auth", "fixtures.mission", "fixtures.testrail"]
 
 
 def pytest_addoption(parser: pytest.Parser):

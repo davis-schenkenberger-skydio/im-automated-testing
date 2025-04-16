@@ -32,12 +32,17 @@ Run the test suite with the following command:
 ```bash
 uv run pytest
 ```
-## Useful commands
 
-Run a specific tests with verbose printing, headed and tracing
-```bash
-uv run pytest -vs --headed --tracing=on -k {test}
-```
+### Flags
+- `-v`: Enable verbose printing.
+- `-s`: Print stdout from tests.
+- `--headed`: Display the web browser UI during tests.
+- `--video on`: Record a video of each test and save it to `test-results`.
+- `--trace on`: Record a trace of each test and save it to `test-results`.
+- `-k {test}`: Run tests matching the specified name pattern.
+- `--report-to-testrail`: Report results to a TestRail run defined by the `TESTRAIL_RUN_ID` environment variable.
+
+## Useful commands
 
 Review a trace:
 ```bash
