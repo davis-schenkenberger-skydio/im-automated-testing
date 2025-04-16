@@ -54,6 +54,9 @@ def pytest_sessionfinish(session, exitstatus):
 
     print()
     for case_id, (status, comment, duration) in results.items():
+        if not isinstance(case_id, int):
+            continue
+
         test_results = tr.get_test_results_for_case(cfg.TESTRAIL_RUN_ID, case_id)
         test_id = test_results["results"][0]["test_id"]
 
