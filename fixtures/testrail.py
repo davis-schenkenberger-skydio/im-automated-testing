@@ -22,7 +22,7 @@ def pytest_configure(config):
         config.testrails = None
 
 
-results = {}
+test_results = {}
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -42,7 +42,7 @@ def pytest_runtest_makereport(item, call):
             duration = report.duration  # in seconds
 
             for case_id in case_ids:
-                results[case_id] = (status, comment, duration)
+                test_results[case_id] = (status, comment, duration)
 
 
 @pytest.hookimpl(trylast=True)
@@ -52,20 +52,18 @@ def pytest_sessionfinish(session, exitstatus):
     if tr is None:
         return
 
-    print()
-    for case_id, (status, comment, duration) in results.items():
+    results = []
+    for case_id, (status, comment, duration) in test_results.items():
         if not isinstance(case_id, int):
             continue
 
-        test_results = tr.get_test_results_for_case(cfg.TESTRAIL_RUN_ID, case_id)
-        test_id = test_results["results"][0]["test_id"]
-
-        print(f"Reporting {case_id} to TestRail with status {status}")
-        tr.add_results(
-            test_id,
-            test_results={
+        results.append(
+            {
+                "case_id": case_id,
                 "status_id": status,
                 "comment": comment,
                 "elapsed": f"{duration:.2f}s",
-            },
+            }
         )
+
+    tr.add_results_for_cases(cfg.TESTRAIL_RUN_ID, {"results": results})

@@ -13,6 +13,7 @@ class TestRail:
         response = requests.request(
             method, url, auth=self.auth, headers=self.headers, **args
         )
+        print(response.text)
         response.raise_for_status()
 
         return response.json()
@@ -33,3 +34,6 @@ class TestRail:
 
     def add_results(self, test_id, test_results: dict):
         self.post(f"add_result/{test_id}", json=test_results)
+
+    def add_results_for_cases(self, run_id: int, test_results: dict):
+        self.post(f"add_results_for_cases/{run_id}", json=test_results)
