@@ -10,3 +10,7 @@ trace file:
 
 flake *args:
     uv run pytest -vs --tracing=on --flake-finder {{args}}
+
+fmt:
+    uv run ruff check --fix
+    uv run ruff format
