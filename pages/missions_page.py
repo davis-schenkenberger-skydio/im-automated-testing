@@ -1,3 +1,4 @@
+import contextlib
 from collections import namedtuple
 from functools import wraps
 
@@ -21,7 +22,7 @@ class Missions(BasePage):
 
     def create_map_capture(self):
         self.create.click()
-        self.page.get_by_text("Map Capture").click()
+        self.page.get_by_label("Create New Mission").get_by_text("Map Capture").click()
         self.page.get_by_role("button", name="Next").click()
         self.page.wait_for_load_state()
 
@@ -75,16 +76,12 @@ class MissionEditor(BasePage):
         self.thermal_gsd_e = self.table.locator("td").nth(3)
 
     def color_gsd(self):
-        self._check_loading()
-
         v = self.color_gsd_e.text_content()
         amount, unit = v.split(" ")
 
         return float(amount)
 
     def thermal_gsd(self):
-        self._check_loading()
-
         v = self.thermal_gsd_e.text_content()
         amount, unit = v.split(" ")
 
@@ -120,8 +117,9 @@ class MissionEditor(BasePage):
     def _wait_for_change(self, func, attempts=200):
         start = func()
         for _ in range(attempts):
-            self.page.wait_for_timeout(200)
             new = func()
+            print(f"Waiting for change: {start} -> {new}")
+            self.page.wait_for_timeout(200)
             if new != start:
                 return new
 
@@ -139,12 +137,49 @@ class MissionEditor(BasePage):
     def wait_for_thermal_gsd(self):
         return self._wait_for_change(self.thermal_gsd)
 
+    def param_change(self):
+        return ParamChange(self)
+
+    def _wait_for_loading(self, expected=False):
+        loading = self.page.locator(".ant-skeleton-button").first
+        if expected:
+            with contextlib.suppress(Exception):
+                loading.wait_for(state="visible", timeout=10000)
+
+        loading.wait_for(state="detached")
+
     def goto(self):
         self.page.goto("missions/editor/3d-scan/unsaved")
 
     def search_in_map(self, query: str):
         self.map_search.press_sequentially(query, delay=200)
         self.map_search.press("Enter")
+
+
+class ParamChange:
+    def __init__(self, instance):
+        self.instance = instance
+
+    def __enter__(self):
+        self.instance._wait_for_loading()
+        self.before_photos = self.instance.photos()
+        self.before_time = self.instance.time()
+        self.before_color_gsd = self.instance.color_gsd()
+        self.before_thermal_gsd = self.instance.thermal_gsd()
+
+        return self
+
+    def __exit__(self, *_):
+        self.instance._wait_for_loading(expected=True)
+        self.after_photos = self.instance.photos()
+        self.after_time = self.instance.time()
+        self.after_color_gsd = self.instance.color_gsd()
+        self.after_thermal_gsd = self.instance.thermal_gsd()
+
+    def change(self, attribute):
+        before = getattr(self, f"before_{attribute}")
+        after = getattr(self, f"after_{attribute}")
+        return after - before
 
 
 class EditorAccordion:
@@ -199,6 +234,8 @@ class ScanSettings(EditorAccordion):
         self.strict_boundaries = self._get_selector("Strict Boundaries", "button")
         self.max_speed = Slider(self._get_selector("Maximum Speed", "div"))
         self.custom_flight_dir = self._get_selector("Custom Flight Direction", "button")
+        self.flight_dir = Slider(self._get_selector("Flight Direction", "div"))
+
         self.perpendicular_heading = self._get_selector(
             "Use Perpendicular Heading", "button"
         )
@@ -264,9 +301,7 @@ class CameraSettings:
 
     def _tablist_selector(self, text: str):
         # following-sibling::div//
-        return self.modal.locator(
-            f"//span[normalize-space(.)='{text}']/parent::div"
-        ).firstZeroDivisionError
+        return self.modal.locator(f"//span[normalize-space(.)='{text}']/parent::div")
 
     def _capture_setting(self, name: str):
         row = self.modal.locator(

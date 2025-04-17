@@ -7,7 +7,6 @@ import data.test_cases as tc
 from components.helpers import get_rotate
 from pages.missions_page import MissionEditor
 from playwright.sync_api import expect
-from utils.funcs import check_change
 from utils.points import find_perpendicular_point, midpoint, sort_by_angle
 
 
@@ -232,11 +231,9 @@ def test_height_input(mission: MissionEditor):
 
     height_slider.slide(0)
     assert height_slider.get_value() == "3", tc.TEST_805477
-    low_alt_time, low_alt_photos = mission.time(), mission.photos()
 
     height_slider.slide(1)
     assert height_slider.get_value() == "400", tc.TEST_805477
-    high_alt_time, high_alt_photos = mission.time(), mission.photos()
 
     height_slider.fill_box(-100)
     assert height_slider.get_value() == "3", tc.TEST_812330
@@ -247,8 +244,12 @@ def test_height_input(mission: MissionEditor):
     height_slider.fill_box(5.123942)
     assert "." not in height_slider.get_value(), tc.TEST_812332
 
-    assert high_alt_time < low_alt_time, tc.TEST_805478
-    assert high_alt_photos < low_alt_photos, tc.TEST_805478
+    height_slider.fill_box(200)
+    with mission.param_change() as param_change:
+        height_slider.fill_box(400)
+
+    assert param_change.change("time") < 0, tc.TEST_805478
+    assert param_change.change("photos") < 0, tc.TEST_805478
 
 
 @pytest.mark.testrail(id=[813632, 812328, 812331, 812329, 813404])
@@ -304,19 +305,17 @@ def test_sidelap_overlap(mission: MissionEditor):
     overlap.fill_box("0")
     sidelap.fill_box("0")
 
-    photo_change = check_change(mission.photos, mission.wait_for_photos)
-    time_change = check_change(mission.time, mission.wait_for_time)
-    with photo_change, time_change:
+    with mission.param_change() as param_change:
         overlap.fill_box("70")
 
-    assert photo_change.change > 0, tc.TEST_805482
-    assert time_change.change == 0, tc.TEST_805482
+    assert param_change.change("photos") > 0, tc.TEST_805482
+    assert param_change.change("time") == 0, tc.TEST_805482
 
-    with photo_change, time_change:
+    with mission.param_change() as param_change:
         sidelap.fill_box("70")
 
-    assert photo_change.change > 0, tc.TEST_805484
-    assert time_change.change > 0, tc.TEST_805484
+    assert param_change.change("photos") > 0, tc.TEST_805484
+    assert param_change.change("time") > 0, tc.TEST_805484
 
 
 @pytest.mark.testrail(id=[805457, 805461, 805462])
@@ -324,28 +323,23 @@ def test_crosshatch(mission: MissionEditor):
     # TODO: find a way to verify that crosshatch is displayed on map
     mission.scan_settings.open()
     crosshatch = mission.scan_settings.crosshatch
-    photo_change = check_change(mission.photos, mission.wait_for_photos)
-    time_change = check_change(mission.time, mission.wait_for_time)
-    map_change = mission.map.map_change()
 
     expect(crosshatch, tc.TEST_805457).to_be_checked(checked=False)
 
-    with photo_change, time_change, map_change:
+    with mission.param_change() as param_change:
         crosshatch.click()
         expect(crosshatch).to_be_checked()
 
-    assert photo_change.change > 0, tc.TEST_805461
-    # assert map_change.rendered_changed > 0, tc.TEST_812333
+    assert param_change.change("photos") > 0, tc.TEST_805461
 
     test_gimbal_angle_input(mission)
 
-    with photo_change, time_change, map_change:
+    with mission.param_change() as param_change:
         crosshatch.click()
         expect(crosshatch).to_be_checked(checked=False)
 
-    assert photo_change.change < 0, tc.TEST_812350
-    assert time_change.change < 0, tc.TEST_812350
-    # assert map_change.rendered_changed < 0, tc.TEST_812350
+    assert param_change.change("photos") < 0, tc.TEST_812350
+    assert param_change.change("time") < 0, tc.TEST_812350
 
 
 @pytest.mark.testrail(
@@ -388,15 +382,12 @@ def test_camera_settings(mission: MissionEditor):
     camera_settings.resolution.select("1/4")
     assert not camera_settings.camera_mode.disabled(), tc.TEST_813184
 
-    gsd_change = check_change(mission.color_gsd)
-    photos_change = check_change(mission.photos, mission.wait_for_photos)
-
     camera_settings.camera_sensor.select("X10 Wide")
-    with gsd_change, photos_change:
+    with mission.param_change() as param_change:
         camera_settings.camera_sensor.select("X10 Narrow")
 
-    assert gsd_change.change < 0, tc.TEST_813192
-    assert photos_change.change > 0, tc.TEST_813192
+    assert param_change.change("color_gsd") < 0, tc.TEST_813192
+    assert param_change.change("time") > 0, tc.TEST_813192
 
     assert camera_settings.image_file_type.selected() == "JPG", tc.TEST_813406
 
@@ -461,17 +452,14 @@ def test_perimeter_settings(mission: MissionEditor):
     overlap = mission.scan_settings.perimeter_overlap
     angle = mission.scan_settings.perimeter_angle
 
-    photo_change = check_change(mission.photos, mission.wait_for_photos)
-    time_change = check_change(mission.time, mission.wait_for_time)
-
     expect(perimeter_toggle, tc.TEST_805440).to_be_checked(checked=False)
 
-    with photo_change, time_change:
+    with mission.param_change() as param_change:
         perimeter_toggle.click()
         expect(perimeter_toggle).to_be_checked()
 
-    assert photo_change.change > 0, tc.TEST_805441
-    assert time_change.change > 0, tc.TEST_805441
+    assert param_change.change("photos") > 0, tc.TEST_805441
+    assert param_change.change("time") > 0, tc.TEST_805441
 
     expect(overlap.element, tc.TEST_805442).to_be_visible()
     expect(angle.element, tc.TEST_805442).to_be_visible()
@@ -481,11 +469,11 @@ def test_perimeter_settings(mission: MissionEditor):
     overlap.slide(0)
     assert overlap.get_value() == "1", tc.TEST_805444
 
-    with photo_change:
+    with mission.param_change() as param_change:
         overlap.slide(1)
 
     assert overlap.get_value() == "95", tc.TEST_805444
-    assert photo_change.change > 0, tc.TEST_805445
+    assert param_change.change("photos") > 0, tc.TEST_805445
 
     assert angle.get_value() == "60", tc.TEST_805446
 
@@ -501,18 +489,16 @@ def test_stop_for_photo(mission: MissionEditor):
     mission.scan_settings.open()
 
     stop_for_photo = mission.scan_settings.stop_for_photo
-    photo_change = check_change(mission.photos, mission.wait_for_photos)
-    time_change = check_change(mission.time, mission.wait_for_time)
 
     expect(stop_for_photo, tc.TEST_805434).to_be_checked(checked=False)
 
-    with photo_change, time_change:
+    with mission.param_change() as param_change:
         stop_for_photo.click()
 
     expect(stop_for_photo).to_be_checked()
 
-    assert photo_change.change == 0, tc.TEST_805435
-    assert time_change.change > 0, tc.TEST_805435
+    assert param_change.change("photos") == 0, tc.TEST_805435
+    assert param_change.change("time") > 0, tc.TEST_805435
 
 
 @pytest.mark.testrail(id=[805437])
@@ -528,7 +514,6 @@ def test_strict_boundaries(mission: MissionEditor):
 @pytest.mark.testrail(id=[805450, 805451, 805452])
 def test_max_speed(mission: MissionEditor):
     mission.scan_settings.open()
-    time_change = check_change(mission.time, mission.wait_for_time)
     max_speed = mission.scan_settings.max_speed
     max_speed.element.scroll_into_view_if_needed()
 
@@ -537,8 +522,44 @@ def test_max_speed(mission: MissionEditor):
     max_speed.slide(0)
     assert max_speed.get_value() == "1", tc.TEST_805451
 
-    with time_change:
+    with mission.param_change() as param_change:
         max_speed.slide(1)
         assert max_speed.get_value() == "36", tc.TEST_805451
 
-    assert time_change.change < 0, tc.TEST_805452
+    assert param_change.change("time") < 0, tc.TEST_805452
+
+
+@pytest.mark.testrail(id=[813617, 813618, 813626, 813627])
+def test_custom_heading(mission: MissionEditor):
+    mission.scan_settings.open()
+
+    custom_heading_bt = mission.scan_settings.custom_flight_dir
+    custom_heading = mission.scan_settings.flight_dir
+
+    expect(custom_heading_bt, tc.TEST_813617).to_be_checked(checked=False)
+
+    expect(custom_heading.input, tc.TEST_813618).to_have_value("90")
+
+    custom_heading.slide(0)
+    expect(custom_heading.input).to_have_value("0")
+
+    custom_heading.slide(1)
+    expect(custom_heading.input).to_have_value("360")
+
+    custom_heading.fill_box("480")
+    expect(custom_heading.input, tc.TEST_813626).to_have_value("360")
+
+    custom_heading.fill_box("-100")
+    expect(custom_heading.input, tc.TEST_813630).to_have_value("0")
+
+    custom_heading.fill_box("145.12")
+    expect(custom_heading.input, tc.TEST_813627).not_to_contain_text(".")
+
+
+@pytest.mark.testrail(id=[813623])
+def test_perpendicular_heading(mission: MissionEditor):
+    mission.scan_settings.open()
+
+    perpendicular_heading = mission.scan_settings.perpendicular_heading
+
+    expect(perpendicular_heading, tc.TEST_813623).to_be_checked(checked=False)

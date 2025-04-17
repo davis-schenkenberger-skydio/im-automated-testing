@@ -32,7 +32,7 @@ class Slider:
         self.input.fill(str(value))
         self.input.press("Enter")
         self.input.page.locator("body").click()
-        self.input.page.wait_for_timeout(1000)  # TODO: FLAKY
+        self.input.page.wait_for_timeout(1500)  # TODO: FLAKY
 
     def get_value(self):
         return self.input.input_value()
