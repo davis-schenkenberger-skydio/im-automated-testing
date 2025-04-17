@@ -304,8 +304,8 @@ def test_sidelap_overlap(mission: MissionEditor):
     overlap.fill_box("0")
     sidelap.fill_box("0")
 
-    photo_change = check_change(mission.photos)
-    time_change = check_change(mission.time)
+    photo_change = check_change(mission.photos, mission.wait_for_photos)
+    time_change = check_change(mission.time, mission.wait_for_time)
     with photo_change, time_change:
         overlap.fill_box("70")
 
@@ -324,8 +324,8 @@ def test_crosshatch(mission: MissionEditor):
     # TODO: find a way to verify that crosshatch is displayed on map
     mission.scan_settings.open()
     crosshatch = mission.scan_settings.crosshatch
-    photo_change = check_change(mission.photos)
-    time_change = check_change(mission.time)
+    photo_change = check_change(mission.photos, mission.wait_for_photos)
+    time_change = check_change(mission.time, mission.wait_for_time)
     map_change = mission.map.map_change()
 
     expect(crosshatch, tc.TEST_805457).to_be_checked(checked=False)
@@ -389,7 +389,7 @@ def test_camera_settings(mission: MissionEditor):
     assert not camera_settings.camera_mode.disabled(), tc.TEST_813184
 
     gsd_change = check_change(mission.color_gsd)
-    photos_change = check_change(mission.photos)
+    photos_change = check_change(mission.photos, mission.wait_for_photos)
 
     camera_settings.camera_sensor.select("X10 Wide")
     with gsd_change, photos_change:
@@ -461,8 +461,8 @@ def test_perimeter_settings(mission: MissionEditor):
     overlap = mission.scan_settings.perimeter_overlap
     angle = mission.scan_settings.perimeter_angle
 
-    photo_change = check_change(mission.photos)
-    time_change = check_change(mission.time)
+    photo_change = check_change(mission.photos, mission.wait_for_photos)
+    time_change = check_change(mission.time, mission.wait_for_time)
 
     expect(perimeter_toggle, tc.TEST_805440).to_be_checked(checked=False)
 
@@ -501,8 +501,8 @@ def test_stop_for_photo(mission: MissionEditor):
     mission.scan_settings.open()
 
     stop_for_photo = mission.scan_settings.stop_for_photo
-    photo_change = check_change(mission.photos)
-    time_change = check_change(mission.time)
+    photo_change = check_change(mission.photos, mission.wait_for_photos)
+    time_change = check_change(mission.time, mission.wait_for_time)
 
     expect(stop_for_photo, tc.TEST_805434).to_be_checked(checked=False)
 
@@ -528,7 +528,7 @@ def test_strict_boundaries(mission: MissionEditor):
 @pytest.mark.testrail(id=[805450, 805451, 805452])
 def test_max_speed(mission: MissionEditor):
     mission.scan_settings.open()
-    time_change = check_change(mission.time)
+    time_change = check_change(mission.time, mission.wait_for_time)
     max_speed = mission.scan_settings.max_speed
     max_speed.element.scroll_into_view_if_needed()
 

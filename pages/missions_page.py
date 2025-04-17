@@ -91,7 +91,6 @@ class MissionEditor(BasePage):
         return float(amount)
 
     def time(self):
-        self._check_loading()
         v = self.time_e.text_content()
 
         if "Too large" in v:
@@ -111,7 +110,6 @@ class MissionEditor(BasePage):
         raise ValueError(f"Unknown time unit: {unit}")
 
     def photos(self):
-        self._check_loading()
         v = self.photos_e.text_content()
 
         if v == "-":
@@ -119,17 +117,27 @@ class MissionEditor(BasePage):
 
         return float(v)
 
-    def _check_loading(self, attempts=50):
-        self.page.wait_for_timeout(2000)
-        loading = self.page.locator(".ant-skeleton-button").first
-        if attempts == 0:
-            return True
-
-        if loading.is_visible(timeout=0):
+    def _wait_for_change(self, func, attempts=200):
+        start = func()
+        for _ in range(attempts):
             self.page.wait_for_timeout(200)
-            return self._check_loading(attempts=attempts - 1)
+            new = func()
+            if new != start:
+                return new
 
-        return False
+        return start
+
+    def wait_for_photos(self):
+        return self._wait_for_change(self.photos)
+
+    def wait_for_time(self):
+        return self._wait_for_change(self.time)
+
+    def wait_for_color_gsd(self):
+        return self._wait_for_change(self.color_gsd)
+
+    def wait_for_thermal_gsd(self):
+        return self._wait_for_change(self.thermal_gsd)
 
     def goto(self):
         self.page.goto("missions/editor/3d-scan/unsaved")
@@ -258,7 +266,7 @@ class CameraSettings:
         # following-sibling::div//
         return self.modal.locator(
             f"//span[normalize-space(.)='{text}']/parent::div"
-        ).first
+        ).firstZeroDivisionError
 
     def _capture_setting(self, name: str):
         row = self.modal.locator(
