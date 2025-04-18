@@ -11,3 +11,6 @@ class RFD(BasePage):
         self.gimbal_pitch = page.get_by_test_id("telemetry-gimbal-pitch")
         self.fly_again = page.get_by_role("button", name="Fly Again")
         self.launch = page.get_by_role("button", name="Launch")
+
+    def goto(self):
+        raise NotImplementedError

@@ -1,11 +1,9 @@
-import re
 from datetime import datetime
 
 import pytest
 
 import data.config as cfg
 from pages.missions_page import MissionEditor, MissionsLibrary
-from pages.rfd_page import RFD
 
 
 @pytest.fixture(scope="session")
@@ -31,15 +29,8 @@ def test_create_mission(mission: MissionEditor, mission_name):
 
     mission.save.click()
 
-    # expect(mission.page).to_have_url("**/missions/library")
-
     library = MissionsLibrary(mission.page)
-    library_m = library.mission(mission_name)
-    library_m.run()
-    library.select_dock(re.compile(".*" + cfg.DOCK_NAME))
-    library.run()
 
-    # expect(mission.page).to_have_url("**/flight/live/**")
-
-    rfd = RFD(mission.page)
+    rfd = library.run_mission(mission_name, cfg.DOCK_NAME)
     rfd.launch.click(timeout=120000)
+    rfd.fly_again.wait_for(timeout=0)

@@ -10,6 +10,7 @@ from playwright.sync_api import Locator, Page
 from utils.map import Map
 
 from .base_page import BasePage
+from .rfd_page import RFD
 
 
 class Missions(BasePage):
@@ -35,9 +36,10 @@ class MissionsLibrary(Missions):
         super().__init__(page)
 
         self.select_dock_e = Dropdown(
-            self.page.locator("//*[contains(@class, 'OnlineVehicleSelector')")
+            self.page.locator("//*[contains(@class, 'OnlineVehicleSelector')]")
         )
-        self.run_e = self.page.get_by_role("button", name="Run Mission")
+        self.modal = self.page.locator(".ant-modal-content")
+        self.run_e = self.modal.get_by_role("button", name="Run Mission")
 
     def goto(self):
         self.page.goto("missions/library")
@@ -52,11 +54,18 @@ class MissionsLibrary(Missions):
             )
         )
 
+    def run_mission(self, mission: str | "LibraryMission", dock: str):
+        if isinstance(mission, str):
+            mission = self.mission(mission)
+
+        mission.run()
+        self.select_dock(dock)
+        self.run_e.click()
+
+        return RFD(self.page)
+
     def select_dock(self, dock: str):
         self.select_dock_e.select(re.compile(f".*{dock}.*"))
-
-    def run(self):
-        self.run_e.click()
 
 
 class LibraryMission:
@@ -67,10 +76,6 @@ class LibraryMission:
 
     def run(self):
         self.run_e.click()
-
-    def open(self): ...
-
-    def delete(self): ...
 
 
 class MissionsSchedule(Missions):
