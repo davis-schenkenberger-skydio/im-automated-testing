@@ -34,4 +34,4 @@ TESTRAIL_URL = os.environ["TESTRAIL_URL"]
 TESTRAIL_EMAIL = os.environ["TESTRAIL_EMAIL"]
 TESTRAIL_RUN_ID = int(os.environ["TESTRAIL_RUN_ID"])
 
-CHROME_EXEC = "/usr/bin/google-chrome"
+CHROME_EXEC = os.environ["CHROME_EXEC"]
