@@ -166,6 +166,7 @@ def test_dock_selection_map(mission: MissionEditor):
 
     with change:
         mission.mission_details.dock.select(re.compile(cfg.DOCK_NAME + ".*"))
+        mission.map.poll_for_map_change()
 
     # TODO: Better way of verifying that dock is showing in correct location
     assert change.rendered_changed > 0, tc.TEST_813000
@@ -537,6 +538,10 @@ def test_custom_heading(mission: MissionEditor):
     custom_heading = mission.scan_settings.flight_dir
 
     expect(custom_heading_bt, tc.TEST_813617).to_be_checked(checked=False)
+
+    custom_heading_bt.click()
+    expect(custom_heading_bt).to_be_checked()
+    expect(custom_heading.element).to_be_visible()
 
     expect(custom_heading.input, tc.TEST_813618).to_have_value("90")
 
