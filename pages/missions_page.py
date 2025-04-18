@@ -1,4 +1,5 @@
 import contextlib
+import re
 from collections import namedtuple
 from functools import wraps
 
@@ -33,8 +34,43 @@ class MissionsLibrary(Missions):
     def __init__(self, page):
         super().__init__(page)
 
+        self.select_dock_e = Dropdown(
+            self.page.locator("//*[contains(@class, 'OnlineVehicleSelector')")
+        )
+        self.run_e = self.page.get_by_role("button", name="Run Mission")
+
     def goto(self):
         self.page.goto("missions/library")
+
+    def missions(self):
+        return [LibraryMission(e) for e in self.page.get_by_test_id("list-container")]
+
+    def mission(self, name: str):
+        return LibraryMission(
+            self.page.locator(
+                f"//*[@data-testid='list-container'][.//*[text()='{name}']]"
+            )
+        )
+
+    def select_dock(self, dock: str):
+        self.select_dock_e.select(re.compile(f".*{dock}.*"))
+
+    def run(self):
+        self.run_e.click()
+
+
+class LibraryMission:
+    def __init__(self, element: Locator):
+        self.element = element
+        self.page = element.page
+        self.run_e = self.element.get_by_role("button", name=" Run Mission")
+
+    def run(self):
+        self.run_e.click()
+
+    def open(self): ...
+
+    def delete(self): ...
 
 
 class MissionsSchedule(Missions):
