@@ -66,4 +66,8 @@ def pytest_sessionfinish(session, exitstatus):
             }
         )
 
-    tr.add_results_for_cases(cfg.TESTRAIL_RUN_ID, {"results": results})
+    if results:
+        tr.add_results_for_cases(cfg.TESTRAIL_RUN_ID, {"results": results})
+        print("Test results have been reported to TestRail.")
+    else:
+        print("No TestRail results to report.")
