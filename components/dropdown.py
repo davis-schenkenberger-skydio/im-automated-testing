@@ -1,7 +1,7 @@
+import contextlib
 import re
 
-from playwright.sync_api import Error as PlaywrightError
-from playwright.sync_api import Locator
+from playwright.sync_api import Locator, expect
 from utils.strings import matches
 
 
@@ -9,28 +9,46 @@ class Dropdown:
     def __init__(self, element: Locator):
         self.element = element
         self.page = element.page
-        self.input = self.element.locator("input").first
         self.selector = self.element.locator(".ant-select-selector")
+        self.input = self.selector.locator("input", has_not_text="").first
         self.options = self.page.locator(".ant-select-item-option")
 
-    def selected(self):
-        return self.selector.text_content()
+    def selected(self) -> str:
+        return self.selector.text_content().strip()
 
-    def select(self, option: str | re.Pattern, retry=5):
-        if matches(self.selected(), option):
-            return
+    def open(self):
+        self.element.wait_for(state="visible", timeout=5000)
+        self.selector.click(force=True)
+        # expect(self.options.first).to_be_visible(timeout=5000)
 
-        self.element.wait_for()
-        self.element.click()
-        # self.options.wait_for()
+    def close(self):
+        if self.input.is_visible() and self.element.get_attribute("aria-expanded") == "true":
+            self.selector.click(force=True)
 
-        try:
-            self.options.get_by_text(option).first.click(timeout=1000)
-        except PlaywrightError as e:
-            if retry:
-                return self.select(option, retry=retry - 1)
+    def select(self, option: str | re.Pattern, retry: int = 10):
+        for attempt in range(retry):
+            try:
+                if matches(self.selected(), option):
+                    return
 
-            raise e
+                with contextlib.suppress(AssertionError):
+                    expect(self.input).to_be_enabled(timeout=10000)
+
+                self.open()
+
+                matched_option = self.options.get_by_text(option).first
+                expect(matched_option).to_be_visible(timeout=3000)
+                matched_option.click()
+
+                if matches(self.selected(), option):
+                    return
+
+            except Exception as e:
+                if attempt < retry:
+                    self.close()
+                    self.page.wait_for_timeout(300)  # short delay before retry
+                    continue
+                raise RuntimeError(f"Failed to select option after {retry} attempts: {e}")
 
     def visible(self) -> bool:
         return self.element.is_visible()
