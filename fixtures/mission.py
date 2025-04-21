@@ -4,7 +4,7 @@ import pytest
 from pytest import FixtureRequest as Request
 
 import data.config as cfg
-from pages.missions_page import MissionEditor, Missions
+from pages.missions_page import MissionEditor, Missions, MissionsLibrary
 from playwright.sync_api import Page
 
 
@@ -77,4 +77,13 @@ def mission(mission_editor: MissionEditor, name, site, dock, boundary):
             mission_editor.page.mouse, cfg.SCAN_CORNERS
         )
 
+    mission_editor.page.wait_for_load_state("networkidle")
     return mission_editor
+
+@pytest.fixture
+def mission_library(auth_page: Page):
+    mission_library = MissionsLibrary(auth_page)
+    mission_library.goto()
+
+    mission_library.page.wait_for_load_state("networkidle")
+    return mission_library
