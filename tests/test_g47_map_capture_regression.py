@@ -163,13 +163,12 @@ def test_site_proceed_no_site(mission: MissionEditor):
 @pytest.mark.testrail(id=[813000])
 def test_dock_selection_map(mission: MissionEditor):
     change = mission.map.map_change()
-    poll = mission.map.poll_for_map_change(attempts=60, func=mission.map.get_rendered_object_count)
+    poll = mission.map.poll_for_map_change(
+        attempts=60, func=mission.map.get_rendered_object_count
+    )
 
-    with change:
-        # we need to wait for map to be rendered after selecting dock to prevent flakiness
-        with poll:
-            mission.mission_details.dock.select(re.compile(cfg.DOCK_NAME + ".*"))
-        
+    with change, poll:
+        mission.mission_details.dock.select(re.compile(cfg.DOCK_NAME + ".*"))
 
     # TODO: Better way of verifying that dock is showing in correct location
     assert change.rendered_changed > 0, tc.TEST_813000

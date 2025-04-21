@@ -22,7 +22,10 @@ class Dropdown:
         # expect(self.options.first).to_be_visible(timeout=5000)
 
     def close(self):
-        if self.input.is_visible() and self.element.get_attribute("aria-expanded") == "true":
+        if (
+            self.input.is_visible()
+            and self.element.get_attribute("aria-expanded") == "true"
+        ):
             self.selector.click(force=True)
 
     def select(self, option: str | re.Pattern, retry: int = 10):
@@ -48,7 +51,7 @@ class Dropdown:
                     self.close()
                     self.page.wait_for_timeout(300)  # short delay before retry
                     continue
-                raise RuntimeError(f"Failed to select option after {retry} attempts: {e}")
+                raise RuntimeError(f"Failed after {retry} attempts: {e}") from e
 
     def visible(self) -> bool:
         return self.element.is_visible()

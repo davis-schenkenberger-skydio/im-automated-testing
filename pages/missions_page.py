@@ -163,7 +163,7 @@ class MissionEditor(BasePage):
         if expected:
             with contextlib.suppress(Exception):
                 loading.wait_for(state="visible", timeout=10000)
-                  
+
         loading.wait_for(state="detached")
 
     def goto(self):
