@@ -72,5 +72,7 @@ def mission(mission_editor: MissionEditor, name, site, dock, boundary):
     if boundary:
         with mission_editor.map.poll_for_map_change():
             mission_editor.mission_details.add_boundary.click()
+        
+        mission_editor.map.drag_bounds_to_coords(mission_editor.page.mouse, cfg.SCAN_CORNERS)
 
     return mission_editor
