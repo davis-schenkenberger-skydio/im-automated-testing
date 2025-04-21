@@ -171,6 +171,9 @@ class MissionEditor(BasePage):
                 loading.wait_for(state="visible", timeout=10000)
 
         loading.wait_for(state="detached")
+        
+        # just make sure that the values are updated
+        self.page.wait_for_timeout(1500)
 
     def goto(self):
         self.page.goto("missions/editor/3d-scan/unsaved")
