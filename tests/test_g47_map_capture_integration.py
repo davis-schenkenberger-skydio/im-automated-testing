@@ -11,6 +11,7 @@ def mission_name():
     return f"Test Mission {datetime.now()}"
 
 
+@pytest.mark.manual
 def test_create_mission(mission: MissionEditor, mission_name):
     mission.mission_details.open()
 
