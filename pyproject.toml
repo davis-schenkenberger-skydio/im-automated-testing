@@ -28,7 +28,8 @@ select = [
 ]
 
 [tool.pytest.ini_options]
-addopts = -m "not manual"
-markers=
+addopts = '-m "not manual"'
+markers='''
     testrail: marker containing testrail id
     manual: tests that should not be ran by default
+    '''
