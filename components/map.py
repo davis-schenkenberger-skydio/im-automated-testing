@@ -192,13 +192,16 @@ class Map:
         return MapChange(self)
 
     @contextmanager
-    def poll_for_map_change(self, attempts=10):
-        points = self.get_rendered_object_count()
+    def poll_for_map_change(self, attempts=10, func=None):
+        if func is None:
+            func = self.get_rendered_object_count
+
+        points = func()
 
         yield
 
         for _ in range(attempts):
-            new_points = self.get_rendered_object_count()
+            new_points = func()
             if points != new_points:
                 return True
 
