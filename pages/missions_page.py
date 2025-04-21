@@ -4,10 +4,10 @@ from collections import namedtuple
 from functools import wraps
 
 from components.dropdown import Dropdown
+from components.map import Map
 from components.slider import Slider
 from components.tab_list import TabList
 from playwright.sync_api import Locator, Page
-from utils.map import Map
 
 from .base_page import BasePage
 from .rfd_page import RFD
@@ -54,7 +54,7 @@ class MissionsLibrary(Missions):
             )
         )
 
-    def run_mission(self, mission: str | "LibraryMission", dock: str):
+    def run_mission(self, mission, dock: str):
         if isinstance(mission, str):
             mission = self.mission(mission)
 
@@ -155,29 +155,6 @@ class MissionEditor(BasePage):
 
         return float(v)
 
-    def _wait_for_change(self, func, attempts=200):
-        start = func()
-        for _ in range(attempts):
-            new = func()
-            print(f"Waiting for change: {start} -> {new}")
-            self.page.wait_for_timeout(200)
-            if new != start:
-                return new
-
-        return start
-
-    def wait_for_photos(self):
-        return self._wait_for_change(self.photos)
-
-    def wait_for_time(self):
-        return self._wait_for_change(self.time)
-
-    def wait_for_color_gsd(self):
-        return self._wait_for_change(self.color_gsd)
-
-    def wait_for_thermal_gsd(self):
-        return self._wait_for_change(self.thermal_gsd)
-
     def param_change(self):
         return ParamChange(self)
 
@@ -186,7 +163,7 @@ class MissionEditor(BasePage):
         if expected:
             with contextlib.suppress(Exception):
                 loading.wait_for(state="visible", timeout=10000)
-
+                  
         loading.wait_for(state="detached")
 
     def goto(self):
@@ -341,7 +318,6 @@ class CameraSettings:
         self.page.locator("span", has_text=rf"{sensor}").click()
 
     def _tablist_selector(self, text: str):
-        # following-sibling::div//
         return self.modal.locator(f"//span[normalize-space(.)='{text}']/parent::div")
 
     def _capture_setting(self, name: str):
