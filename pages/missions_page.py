@@ -45,7 +45,7 @@ class MissionsLibrary(Missions):
         self.page.goto("missions/library")
 
     def missions(self):
-        return [LibraryMission(e) for e in self.page.get_by_test_id("list-container")]
+        return [LibraryMission(e) for e in self.page.get_by_test_id("list-container").all()]
 
     def mission(self, name: str):
         return LibraryMission(
@@ -73,9 +73,15 @@ class LibraryMission:
         self.element = element
         self.page = element.page
         self.run_e = self.element.get_by_role("button", name=" Run Mission")
+        self.options = self.element.locator("//*[contains(@id, 'radix')]")
 
     def run(self):
         self.run_e.click()
+
+    def delete(self):
+        self.options.click()
+        self.page.locator("span", has_text="Delete").click()
+        self.page.get_by_role("button", name="Delete").click()
 
 
 class MissionsSchedule(Missions):

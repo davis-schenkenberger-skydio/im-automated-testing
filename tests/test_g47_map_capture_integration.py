@@ -35,3 +35,11 @@ def test_create_mission(mission: MissionEditor, mission_name):
     rfd = library.run_mission(mission_name, cfg.DOCK_NAME)
     rfd.launch.click(timeout=120000)
     rfd.fly_again.wait_for(timeout=0)
+
+@pytest.mark.manual
+def test_delete_missions(mission_library: MissionsLibrary, mission_name):
+    while missions := mission_library.missions():
+        for mission in missions:
+            mission.delete()
+
+        mission_library.page.reload()
