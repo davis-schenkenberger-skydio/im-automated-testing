@@ -9,6 +9,7 @@ dependencies = [
     "pre-commit>=4.2.0",
     "pytest-base-url>=2.1.0",
     "pytest-flakefinder>=1.1.0",
+    "pytest-html>=4.1.1",
     "pytest-playwright>=0.7.0",
     "pytest-xdist>=3.6.1",
     "python-dotenv>=1.1.0",
@@ -33,3 +34,5 @@ markers='''
     testrail: marker containing testrail id
     manual: tests that should not be ran by default
     '''
+generate_report_on_test = true
+

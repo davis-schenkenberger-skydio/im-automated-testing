@@ -74,7 +74,7 @@ def test_skip_add_boundary(mission: MissionEditor):
 @pytest.mark.parametrize("site", [None], ids=["no-site"], indirect=True)
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrail(id=[805426, 813395, 813391])
+@pytest.mark.testrail(id=[805426, 813395, 813391, 813395, 805425])
 def test_mission_name(mission: MissionEditor):
     expect(mission.mission_details.name, tc.TEST_805425).to_have_attribute(
         "placeholder",
@@ -160,7 +160,7 @@ def test_site_proceed_no_site(mission: MissionEditor):
 @pytest.mark.parametrize("site", [cfg.SITE_NAME], ids=["site"])
 @pytest.mark.parametrize("dock", [None], ids=["no-dock"], indirect=True)
 @pytest.mark.parametrize("boundary", [False], ids=["no-boundary"], indirect=True)
-@pytest.mark.testrail(id=[813000])
+@pytest.mark.testrail(id=[813000, 812999])
 def test_dock_selection_map(mission: MissionEditor):
     change = mission.map.map_change()
     poll = mission.map.poll_for_map_change(
@@ -283,7 +283,7 @@ def test_gimbal_angle_input(mission: MissionEditor):
     assert high_rotate > low_rotate, tc.TEST_813404
 
 
-@pytest.mark.testrail(id=[805480, 813405, 805481, 805483, 805484])
+@pytest.mark.testrail(id=[805480, 813403, 805481, 805483, 805484, 805482])
 def test_sidelap_overlap(mission: MissionEditor):
     mission.scan_settings.open()
 
@@ -291,7 +291,7 @@ def test_sidelap_overlap(mission: MissionEditor):
     sidelap = mission.scan_settings.sidelap
 
     assert overlap.get_value() == "70", tc.TEST_805480
-    assert sidelap.get_value() == "70", tc.TEST_813405
+    assert sidelap.get_value() == "70", tc.TEST_813403
 
     overlap.slide(0)
     sidelap.slide(0)
@@ -360,6 +360,7 @@ def test_crosshatch(mission: MissionEditor):
         813416,
         813414,
         813415,
+        813188
     ]
 )
 def test_camera_settings(mission: MissionEditor):

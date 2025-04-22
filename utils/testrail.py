@@ -13,7 +13,7 @@ class TestRail:
         response = requests.request(
             method, url, auth=self.auth, headers=self.headers, **args
         )
-        print(response.text)
+
         response.raise_for_status()
 
         return response.json()
